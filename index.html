@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Slope and Intercept Visualizer</title>
+  <style>
+    body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; margin-top: 40px; }
+    .controls { margin-bottom: 20px; }
+    label { margin-right: 8px; }
+    input { width: 60px; margin-right: 16px; }
+    canvas { border: 1px solid #888; background: #fff; }
+  </style>
+</head>
+<body>
+  <h1>Slope & Intercept Visualizer Program</h1>
+  <div class="controls">
+    <label for="slope">Slope (m):</label>
+    <input type="number" id="slope" value="1" step="any">
+    <label for="intercept">Y-Intercept (b):</label>
+    <input type="number" id="intercept" value="0" step="any">
+    <button id="plotBtn">Plot Line</button>
+  </div>
+  <canvas id="graph" width="400" height="400"></canvas>
+  <script>
+    const canvas = document.getElementById('graph');
+    const ctx = canvas.getContext('2d');
+    const plotBtn = document.getElementById('plotBtn');
+    function drawAxes() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.strokeStyle = '#aaa';
+      ctx.lineWidth = 1;
+      // X axis
+      ctx.beginPath();
+      ctx.moveTo(0, canvas.height / 2);
+      ctx.lineTo(canvas.width, canvas.height / 2);
+      ctx.stroke();
+      // Y axis
+      ctx.beginPath();
+      ctx.moveTo(canvas.width / 2, 0);
+      ctx.lineTo(canvas.width / 2, canvas.height);
+      ctx.stroke();
+    }
+    function plotLine(m, b) {
+      drawAxes();
+      ctx.strokeStyle = '#0074D9';
+      ctx.lineWidth = 2;
+      // Map x from -10 to 10
+      const xMin = -10, xMax = 10;
+      const yMin = -10, yMax = 10;
+      function toCanvas(x, y) {
+        // Convert math coords to canvas coords
+        const px = ((x - xMin) / (xMax - xMin)) * canvas.width;
+        const py = canvas.height - ((y - yMin) / (yMax - yMin)) * canvas.height;
+        return [px, py];
+      }
+      // Find endpoints
+      const x1 = xMin, y1 = m * x1 + b;
+      const x2 = xMax, y2 = m * x2 + b;
+      const [px1, py1] = toCanvas(x1, y1);
+      const [px2, py2] = toCanvas(x2, y2);
+      ctx.beginPath();
+      ctx.moveTo(px1, py1);
+      ctx.lineTo(px2, py2);
+      ctx.stroke();
+    }
+    plotBtn.addEventListener('click', () => {
+      const m = parseFloat(document.getElementById('slope').value);
+      const b = parseFloat(document.getElementById('intercept').value);
+      plotLine(m, b);
+    });
+    // Initial plot
+    plotLine(1, 0);
+  </script>
+</body>
+</html>
